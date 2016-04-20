@@ -3,9 +3,14 @@
 #include <string>
 #include <iostream>
 
-void print_parse(std::string, int)
+void print_parse(std::string word, int val)
 {
-
+	std::string result;
+	if (val == 1) //it's a keyword
+	{
+		result = "(KEYWORD " + word + ")";
+	}
+	std::cout << result << std::endl;
 }
 
 int word_length(char* c)
@@ -18,8 +23,21 @@ int word_length(char* c)
 	return len;
 }
 
-int look_for_keywords(char* c)
+int look_for_keywords(std::string word)
 {
+	if (word == "and" || word == "as" || word == "assert" || word == "break" || word == "class"
+		|| word == "continue" || word == "def" || word == "del" || word == "elif" || word == "else"
+		|| word == "except" || word == "exec" || word == "finally" || word == "for" || word == "from"
+		|| word == "global" || word == "if" || word == "import" || word == "in" || word == "is"
+		|| word == "lambda" || word == "not" || word == "or" || word == "pass" || word == "print"
+		|| word == "raise" || word == "return" || word == "try" || word == "while" || word == "with"
+		|| word == "yield")
+	{
+		print_parse(word, 1);
+	}
+	//check to see if it's a keyword
+	//if it is, call print parse to print, return 1
+	//if not, return -1
 	return -1;
 }
 
@@ -34,10 +52,20 @@ void parse_line(char line[])
 		if (line[i] == '	' || line[i] == '    ') //char is a tab
 		{
 			std::cout << "tab!\n";
-		}
+		} //add check for punctuation
 		else if (line[i] != ' ')
 		{
-			std::cout << word_length(&line[i]) << std::endl;
+			int len = word_length(&line[i]);
+			std::cout << len << std::endl;
+			//make the word
+			char* word = new char[len + 1];
+			for (int w = 0; w < len; ++w)
+			{
+				word[w] = line[i + w];
+			}
+			word[len] = '\0';
+			std::string wordstr(word);
+			look_for_keywords(wordstr);
 			i += word_length(&line[i]) - 1;
 		}
 	}
