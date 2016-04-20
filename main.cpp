@@ -8,9 +8,19 @@ void print_parse(std::string, int)
 
 }
 
-void look_for_keywords(char line[], int pos)
+int word_length(char* c)
 {
-	
+	int len = 0;
+	while (*(c + len) != ' ' && *(c + len) != '\0')
+	{
+		++len;
+	}
+	return len;
+}
+
+int look_for_keywords(char* c)
+{
+	return -1;
 }
 
 void parse_line(char line[])
@@ -21,8 +31,15 @@ void parse_line(char line[])
 		{
 			break;
 		}
-		
-		std::cout << line[i] << " ";
+		if (line[i] == '	' || line[i] == '    ') //char is a tab
+		{
+			std::cout << "tab!\n";
+		}
+		else if (line[i] != ' ')
+		{
+			std::cout << word_length(&line[i]) << std::endl;
+			i += word_length(&line[i]) - 1;
+		}
 	}
 	printf("\n");
 }
