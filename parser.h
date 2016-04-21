@@ -13,5 +13,5 @@ public:
 	int string_check(char*);
 	void parse_line(char*);
 	void read_file(std::string);
-	void find_literal(char*, int);
+	int find_literal(char*);
 };

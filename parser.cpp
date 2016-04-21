@@ -16,7 +16,21 @@ void Parser::print_parse(std::string word, int val)
 	{
 		result = "(ID \"" + word + "\")";
 	}
+	else if (val == 4)
+	{
+		result = "(LIT \"" + word + "\")";
+	}
 	std::cout << result << std::endl;
+}
+
+int Parser::find_literal(char* c)
+{
+	int len = 1;
+	while (*(c + len) != '"')
+	{
+		++len;
+	}
+	return len;
 }
 
 int Parser::punctuation_check(char* c)
@@ -24,6 +38,10 @@ int Parser::punctuation_check(char* c)
 	if (*c == '=' && *(c + 1) == '=')
 	{
 		return 2;
+	}
+	else if (*c == '\"')
+	{
+		return 3;
 	}
 	else if (*c == ':' || *c == '-' || *c == '+' || *c == '*' || *c == '/'
 		|| *c == '(' || *c == ')' || *c == '=')
@@ -74,7 +92,7 @@ void Parser::parse_line(char line[])
 		}
 		if (line[i] == '	' || line[i] == '    ') //char is a tab
 		{
-			std::cout << "tab!\n";
+			//do tab stuff
 		}
 		else if (x != -1)
 		{
@@ -88,6 +106,18 @@ void Parser::parse_line(char line[])
 				char d[3] = { line[i], line[i + 1], '\0' };
 				print_parse(std::string(d), 2);
 				++i;
+			}
+			else if (x == 3)
+			{
+				int q = find_literal(&line[i]);;
+				char *d = new char[q];
+				for (int w = 1; w < q; ++w)
+				{
+					d[w - 1] = line[i + w];
+				}
+				d[q] = '\0';
+				i += q + 1;
+				print_parse(std::string(d), 4);
 			}
 		}
 		else if (line[i] != ' ')
@@ -112,7 +142,6 @@ void Parser::parse_line(char line[])
 			i += word_length(&line[i]) - 1;
 		}
 	}
-	printf("\n");
 }
 
 
