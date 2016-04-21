@@ -12,6 +12,10 @@ void Parser::print_parse(std::string word, int val)
 	{
 		result = "(PUNCT \"" + word + "\")";
 	}
+	else if (val == 3)
+	{
+		result = "(ID \"" + word + "\")";
+	}
 	std::cout << result << std::endl;
 }
 
@@ -19,10 +23,10 @@ int Parser::punctuation_check(char* c)
 {
 	if (*c == '=' && *(c + 1) == '=')
 	{
-		return 1;
+		return 2;
 	}
 	else if (*c == ':' || *c == '-' || *c == '+' || *c == '*' || *c == '/'
-		|| *c == '(' || *c == ')')
+		|| *c == '(' || *c == ')' || *c == '=')
 	{
 		return 1;
 	}
@@ -49,7 +53,6 @@ int Parser::keyword_check(std::string word)
 		|| word == "raise" || word == "return" || word == "try" || word == "while" || word == "with"
 		|| word == "yield")
 	{
-		print_parse(word, 1);
 		return 1;
 	}
 	return -1;
@@ -64,6 +67,7 @@ void Parser::parse_line(char line[])
 {
 	for (int i = 0; i < 999 & line[i] != '\0'; ++i)
 	{
+		int x = punctuation_check(&line[i]);
 		if (line[i] == '#') //ignore the comments
 		{
 			break;
@@ -72,7 +76,7 @@ void Parser::parse_line(char line[])
 		{
 			std::cout << "tab!\n";
 		}
-		else if (int x = punctuation_check(&line[i]) != -1)
+		else if (x != -1)
 		{
 			if (x == 1)
 			{
@@ -83,12 +87,12 @@ void Parser::parse_line(char line[])
 			{
 				char d[3] = { line[i], line[i + 1], '\0' };
 				print_parse(std::string(d), 2);
+				++i;
 			}
 		}
 		else if (line[i] != ' ')
 		{
 			int len = word_length(&line[i]);
-			std::cout << len << std::endl;
 			//make the word
 			char* word = new char[len + 1];
 			for (int w = 0; w < len; ++w)
@@ -97,7 +101,14 @@ void Parser::parse_line(char line[])
 			}
 			word[len] = '\0';
 			std::string wordstr(word);
-			keyword_check(wordstr);
+			if (keyword_check(wordstr) == 1) //it's a keyword
+			{
+				print_parse(wordstr, 1);
+			}
+			else // it's an ID
+			{
+				print_parse(wordstr, 3);
+			}
 			i += word_length(&line[i]) - 1;
 		}
 	}
