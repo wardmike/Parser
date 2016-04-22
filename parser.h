@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <iostream>
+#include <cctype>
 
 class Parser
 {
@@ -14,4 +15,6 @@ public:
 	void parse_line(char*);
 	void read_file(std::string);
 	int find_literal(char*);
+	int find_boolean(std::string);
+	int find_number(std::string);
 };

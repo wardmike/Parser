@@ -33,18 +33,43 @@ int Parser::find_literal(char* c)
 	return len;
 }
 
+int Parser::find_boolean(std::string c)
+{
+	if (c == "True" || c == "False") //it's a boolean
+	{
+		return 1;
+	}
+	else
+	{
+		return -1; //it's not a boolean
+	}
+}
+
+int Parser::find_number(std::string c)
+{
+	int len = c.length();
+	for (int i = 0; i < len; ++i)
+	{
+		if (!std::isdigit(c[i]) && c[i] != '.' && c[i] != 'j' && c[i] != '\0')
+		{
+			return -1;
+		}
+	}
+	return 1;
+}
+
 int Parser::punctuation_check(char* c)
 {
-	if (*c == '=' && *(c + 1) == '=')
+	if (*c == '=' && *(c + 1) == '=') //if it's ==
 	{
 		return 2;
 	}
-	else if (*c == '\"')
+	else if (*c == '\"') //if it's a quote
 	{
 		return 3;
 	}
 	else if (*c == ':' || *c == '-' || *c == '+' || *c == '*' || *c == '/'
-		|| *c == '(' || *c == ')' || *c == '=')
+		|| *c == '(' || *c == ')' || *c == '=') //any other punctuation
 	{
 		return 1;
 	}
@@ -73,7 +98,10 @@ int Parser::keyword_check(std::string word)
 	{
 		return 1;
 	}
-	return -1;
+	else
+	{
+		return -1;
+	}
 }
 
 int Parser::string_check(char* c)
@@ -120,7 +148,7 @@ void Parser::parse_line(char line[])
 				print_parse(std::string(d), 4);
 			}
 		}
-		else if (line[i] != ' ')
+		else if (line[i] != ' ') // it's a word not in quotes
 		{
 			int len = word_length(&line[i]);
 			//make the word
@@ -134,6 +162,14 @@ void Parser::parse_line(char line[])
 			if (keyword_check(wordstr) == 1) //it's a keyword
 			{
 				print_parse(wordstr, 1);
+			}
+			else if (find_boolean(wordstr) == 1) //it's a boolean
+			{
+				print_parse(wordstr, 4);
+			}
+			else if (find_number(wordstr) == 1) //it's a number
+			{
+				print_parse(wordstr, 4);
 			}
 			else // it's an ID
 			{
