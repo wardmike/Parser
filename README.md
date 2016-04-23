@@ -1,2 +1,2 @@
 # Python Parser
-A short program that parses Python programs using C++.
+A short program that parses Python code using C++.
