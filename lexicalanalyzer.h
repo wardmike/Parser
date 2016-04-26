@@ -4,7 +4,7 @@
 #include <iostream>
 #include <cctype>
 
-class Parser
+class LexialAnalyzer
 {
 public:
 	void print_parse(std::string, int);
@@ -17,4 +17,7 @@ public:
 	int find_literal(char*);
 	int find_boolean(std::string);
 	int find_number(std::string);
+	LexialAnalyzer(std::string);
+private:
+	std::ofstream* fout;
 };

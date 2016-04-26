@@ -1,7 +1,13 @@
-#include "parser.h"
+#include "lexicalanalyzer.h"
+
+LexialAnalyzer::LexialAnalyzer(std::string filename)
+{
+	this->fout = new std::ofstream();
+	fout->open(filename);
+}
 
 
-void Parser::print_parse(std::string word, int val)
+void LexialAnalyzer::print_parse(std::string word, int val)
 {
 	std::string result;
 	if (val == 1) //it's a keyword
@@ -21,19 +27,29 @@ void Parser::print_parse(std::string word, int val)
 		result = "(LIT \"" + word + "\")";
 	}
 	std::cout << result << std::endl;
+	*(this->fout) << result << std::endl;
 }
 
-int Parser::find_literal(char* c)
+int LexialAnalyzer::find_literal(char* c)
 {
 	int len = 1;
-	while (*(c + len) != '"')
+	bool go = true;
+	while (go)
 	{
-		++len;
+		if (*(c + len) == '"' && *(c + len - 1) != '\\')
+		{
+			go = false;
+			break;
+		}
+		else
+		{
+			++len;
+		}
 	}
 	return len;
 }
 
-int Parser::find_boolean(std::string c)
+int LexialAnalyzer::find_boolean(std::string c)
 {
 	if (c == "True" || c == "False") //it's a boolean
 	{
@@ -45,7 +61,7 @@ int Parser::find_boolean(std::string c)
 	}
 }
 
-int Parser::find_number(std::string c)
+int LexialAnalyzer::find_number(std::string c)
 {
 	int len = c.length();
 	for (int i = 0; i < len; ++i)
@@ -58,7 +74,7 @@ int Parser::find_number(std::string c)
 	return 1;
 }
 
-int Parser::punctuation_check(char* c)
+int LexialAnalyzer::punctuation_check(char* c)
 {
 	if (*c == '=' && *(c + 1) == '=') //if it's ==
 	{
@@ -76,7 +92,7 @@ int Parser::punctuation_check(char* c)
 	return -1;
 }
 
-int Parser::word_length(char* c)
+int LexialAnalyzer::word_length(char* c)
 {
 	int len = 0;
 	while (*(c + len) != ' ' && *(c + len) != '\0' && punctuation_check(&(*(c + len))) == -1)
@@ -86,7 +102,7 @@ int Parser::word_length(char* c)
 	return len;
 }
 
-int Parser::keyword_check(std::string word)
+int LexialAnalyzer::keyword_check(std::string word)
 {
 	if (word == "and" || word == "as" || word == "assert" || word == "break" || word == "class"
 		|| word == "continue" || word == "def" || word == "del" || word == "elif" || word == "else"
@@ -104,12 +120,12 @@ int Parser::keyword_check(std::string word)
 	}
 }
 
-int Parser::string_check(char* c)
+int LexialAnalyzer::string_check(char* c)
 {
 	return -1;
 }
 
-void Parser::parse_line(char line[])
+void LexialAnalyzer::parse_line(char line[])
 {
 	for (int i = 0; i < 999 & line[i] != '\0'; ++i)
 	{
@@ -124,20 +140,20 @@ void Parser::parse_line(char line[])
 		}
 		else if (x != -1)
 		{
-			if (x == 1)
+			if (x == 1) //1-character punctuation
 			{
 				char d[2] = { line[i], '\0' };
 				print_parse(std::string(d), 2);
 			}
-			else if (x == 2)
+			else if (x == 2) //2-character punctuation
 			{
 				char d[3] = { line[i], line[i + 1], '\0' };
 				print_parse(std::string(d), 2);
 				++i;
 			}
-			else if (x == 3)
+			else if (x == 3) //it's a word in quotes
 			{
-				int q = find_literal(&line[i]);;
+				int q = find_literal(&line[i]);
 				char *d = new char[q];
 				for (int w = 1; w < q; ++w)
 				{
@@ -181,7 +197,7 @@ void Parser::parse_line(char line[])
 }
 
 
-void Parser::read_file(std::string filename)
+void LexialAnalyzer::read_file(std::string filename)
 {
 	std::ifstream fin;
 	fin.open(filename);
