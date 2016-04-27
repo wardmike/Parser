@@ -154,12 +154,12 @@ void LexialAnalyzer::parse_line(char line[])
 			else if (x == 3) //it's a word in quotes
 			{
 				int q = find_literal(&line[i]);
-				char *d = new char[q];
+				char *d = new char[q - 1];
 				for (int w = 1; w < q; ++w)
 				{
 					d[w - 1] = line[i + w];
 				}
-				d[q] = '\0';
+				d[q - 1] = '\0';
 				i += q + 1;
 				print_parse(std::string(d), 4);
 			}
