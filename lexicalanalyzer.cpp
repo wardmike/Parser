@@ -1,3 +1,9 @@
+/*
+Michael Ward A01755332
+Robert Jacobson A01386891
+Kris Mygrant A01962860
+*/
+
 #include "lexicalanalyzer.h"
 
 LexialAnalyzer::LexialAnalyzer(std::string filename)
@@ -74,7 +80,7 @@ void LexialAnalyzer::print_parse(int val, std::string word = "")
 	}
 	else if (val == 8)
 	{
-		result = "(ERROR - \"" + word + "\" is an invalid ID name)";
+		result = "(ERROR - \"" + word + "\" is an invalid phrase)";
 	}
 	std::cout << result << std::endl;
 	//*(this->fout) << result << std::endl;
@@ -119,7 +125,7 @@ int LexialAnalyzer::find_number(std::string c)
 	int len = c.length();
 	for (int i = 0; i < len; ++i)
 	{
-		if (c[i] == 'e')
+		if (c[i] == 'e' || c[i] == 'E')
 		{
 			if (e) //we've already had an e
 			{
@@ -135,7 +141,7 @@ int LexialAnalyzer::find_number(std::string c)
 			}
 			period = true;
 		}
-		if (c[i] == 'j')
+		if (c[i] == 'j' || c[i] == 'J')
 		{
 			if (j) //we've already had a j
 			{
@@ -145,12 +151,12 @@ int LexialAnalyzer::find_number(std::string c)
 		}
 		if ((c[i] == '-' && c[i] == '+') && i > 0)
 		{
-			if (c[i - 1] != 'e')
+			if (c[i - 1] != 'e' || c[i - 1] != 'E')
 			{
 				return -1;
 			}
 		}
-		if (!std::isdigit(c[i]) && c[i] != '-' && c[i] != '+' &&c[i] != '.' && c[i] != 'j' && c[i] != 'e' && c[i] != '\0')
+		if (!std::isdigit(c[i]) && c[i] != '-' && c[i] != 'E' && c[i] != '+' &&c[i] != '.' && c[i] != 'J' && c[i] != 'j' && c[i] != 'e' && c[i] != '\0')
 		{
 			return -1;
 		}
@@ -182,7 +188,7 @@ int LexialAnalyzer::punctuation_check(char* c)
 	{
 		if (this->whiteCount > 0)
 		{
-			if (*(c - 1) == 'e')
+			if (*(c - 1) == 'e' || *(c - 1) == 'E')
 			{
 				return -1;
 			}
@@ -278,49 +284,96 @@ void LexialAnalyzer::parse_line(char line[])
 	this->whiteCount = 0;
 	for (int i = 0; i < 999 & line[i] != '\0'; ++i)
 	{
-		if (whitespace)
+		if (this->comment)
 		{
-			if (line[i] == ' ') //blank space
+			if (line[i] == '\'' && line[i + 1] == '\'' && line[i + 2] == '\'')
 			{
-				++whiteCount;
-			}
-			else if (line[i] == '	') //tab
-			{
-				print_parse_whitespace(1, whiteCount);
-				whiteCount = 0;
-				print_parse_whitespace(2);
-			}
-			else //end of whitespace
-			{
-				print_parse_whitespace(1, whiteCount);
-				whitespace = false;
-				--i; //check the same character again
+				this->comment = false;
+				i += 2;
+				continue;
 			}
 		}
 		else
 		{
-			int x = punctuation_check(&line[i]);
-			if (line[i] == '#') //ignore the comments
+			if (line[i] == '\'' && line[i + 1] == '\'' && line[i + 2] == '\'')
 			{
-				break;
+				this->comment = true;
+				i += 2;
+				continue;
 			}
-				if (x != -1)
+			else if (whitespace)
+			{
+				if (line[i] == ' ') //blank space
 				{
-					if (x == 3) //it's a word in quotes
+					++whiteCount;
+				}
+				else if (line[i] == '	') //tab
+				{
+					print_parse_whitespace(1, whiteCount);
+					whiteCount = 0;
+					print_parse_whitespace(2);
+				}
+				else //end of whitespace
+				{
+					print_parse_whitespace(1, whiteCount);
+					whitespace = false;
+					--i; //check the same character again
+				}
+			}
+			else
+			{
+				int x = punctuation_check(&line[i]);
+				if (line[i] == '#') //ignore the comments
+				{
+					break;
+				}
+					if (x != -1)
 					{
-						int q = find_literal(&line[i]);
-						char *d = new char[q - 1];
-						for (int w = 1; w < q; ++w)
+						if (x == 3) //it's a word in quotes
 						{
-							d[w - 1] = line[i + w];
+							int q = find_literal(&line[i]);
+							char *d = new char[q - 1];
+							for (int w = 1; w < q; ++w)
+							{
+								d[w - 1] = line[i + w];
+							}
+							d[q - 1] = '\0';
+							i += q;
+							print_parse(4, std::string(d));
 						}
-						d[q - 1] = '\0';
-						i += q;
-						print_parse(4, std::string(d));
+						else
+						{
+							int len = punctuation_length(&line[i]);
+							if (len > 0)
+							{
+								//make the word
+								char* word = new char[len + 1];
+								for (int w = 0; w < len; ++w)
+								{
+									word[w] = line[i + w];
+								}
+								word[len] = '\0';
+								std::string wordstr(word);
+								int y = punctuation_valid(wordstr);
+								if (y == 1)
+								{
+									print_parse(6, wordstr); //operator
+								}
+								else if (y == 2)
+								{
+									print_parse(7, wordstr); //delimiter
+								}
+								else if (y == -1)
+								{
+										print_parse(5, wordstr); //invalid punctuation
+								}
+								i += len - 1;
+							}
+						}
 					}
-					else
+					else if (line[i] != ' ') // it's a word not in quotes
 					{
-						int len = punctuation_length(&line[i]);
+						int len = word_length(&line[i]);
 						if (len > 0)
 						{
 							//make the word
@@ -331,67 +384,41 @@ void LexialAnalyzer::parse_line(char line[])
 							}
 							word[len] = '\0';
 							std::string wordstr(word);
-							int y = punctuation_valid(wordstr);
-							if (y == 1)
+							if (keyword_check(wordstr) == 1) //it's a keyword
 							{
-								print_parse(6, wordstr); //operator
+								print_parse(1, wordstr);
 							}
-							else if (y == 2)
+							else if (find_boolean(wordstr) == 1) //it's a boolean
 							{
-								print_parse(7, wordstr); //delimiter
+								print_parse(4, wordstr);
 							}
-							else if (y == -1)
+							else if (find_number(wordstr) == 1) //it's a number
 							{
-									print_parse(5, wordstr); //invalid punctuation
+								print_parse(4, wordstr);
+							}
+							else // it's an ID
+							{
+								if (valid_id(wordstr))
+								{
+									print_parse(3, wordstr);
+								}
+								else
+								{
+									print_parse(8, wordstr);
+								}
+							
 							}
 							i += len - 1;
 						}
-					}
-				}
-				else if (line[i] != ' ') // it's a word not in quotes
-				{
-					int len = word_length(&line[i]);
-					if (len > 0)
-					{
-						//make the word
-						char* word = new char[len + 1];
-						for (int w = 0; w < len; ++w)
-						{
-							word[w] = line[i + w];
-						}
-						word[len] = '\0';
-						std::string wordstr(word);
-						if (keyword_check(wordstr) == 1) //it's a keyword
-						{
-							print_parse(1, wordstr);
-						}
-						else if (find_boolean(wordstr) == 1) //it's a boolean
-						{
-							print_parse(4, wordstr);
-						}
-						else if (find_number(wordstr) == 1) //it's a number
-						{
-							print_parse(4, wordstr);
-						}
-						else // it's an ID
-						{
-							if (valid_id(wordstr))
-							{
-								print_parse(3, wordstr);
-							}
-							else
-							{
-								print_parse(8, wordstr);
-							}
-							
-						}
-						i += len - 1;
-					}
 					
-				}
+					}
+			}
 		}
 	}
-	print_parse(2, "\\n");
+	if (!this->comment)
+	{
+		print_parse(2, "\\n");
+	}
 }
 
 
@@ -424,3 +451,9 @@ void LexialAnalyzer::read_file(std::string filename)
 		std::cout << "Could not open file.\n";
 	}
 }
+
+/*
+Michael Ward A01755332
+Robert Jacobson A01386891
+Kris Mygrant A01962860
+*/
