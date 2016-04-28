@@ -7,7 +7,7 @@
 class LexialAnalyzer
 {
 public:
-	void print_parse(std::string, int);
+	void print_parse(int, std::string);
 	int punctuation_check(char*);
 	int word_length(char*);
 	int keyword_check(std::string);
@@ -17,7 +17,13 @@ public:
 	int find_literal(char*);
 	int find_boolean(std::string);
 	int find_number(std::string);
+	void print_parse_whitespace(int, int);
 	LexialAnalyzer(std::string);
+	int punctuation_length(char *c);
+	int punctuation_valid(std::string);
+	bool valid_id(std::string);
+	
 private:
 	std::ofstream* fout;
+	int whiteCount;
 };
