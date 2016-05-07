@@ -5,6 +5,7 @@ Kris Mygrant A01962860
 */
 
 #include "lexicalanalyzer.h"
+#include "syntaxanalyzer.h"
 
 
 int main(int argc, char* argv[])
@@ -14,7 +15,7 @@ int main(int argc, char* argv[])
 	std::cin >> filename;
 	LexialAnalyzer* la = new LexialAnalyzer("output.txt");
 	la->read_file(filename);
-	//SyntaxAnalyzer* sa = new SyntaxAnalyzer();
+	SyntaxAnalyzer* sa = new SyntaxAnalyzer("output.txt");
 }
 
 

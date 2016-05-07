@@ -14,21 +14,19 @@ LexialAnalyzer::LexialAnalyzer(std::string filename)
 
 void LexialAnalyzer::print_parse_whitespace(int val, int count = 0)
 {
-	std::string result;
 	if (val == 1) //it's whitespace
 	{
 		if (count > 0)
 		{
-			result = "(WHITESPACE " + count + ')';
-			std::cout << "(WHITESPACE " << count << ")\n";
+			*(this->fout) << "(WHITESPACE " << count << ")\n";
+			//std::cout << "(WHITESPACE " << count << ")\n";
 		}
 	}
 	if (val == 2) //it's a tab
 	{
-		result = "(WHITESPACE TAB)";
-		std::cout << result << std::endl;
+		*(this->fout) << "(WHITESPACE TAB)\n";
+		//std::cout << "(WHITESPACE TAB)" << std::endl;
 	}
-	//*(this->fout) << result << std::endl;
 }
 
 bool LexialAnalyzer::valid_id(std::string word)
@@ -82,8 +80,8 @@ void LexialAnalyzer::print_parse(int val, std::string word = "")
 	{
 		result = "(ERROR - \"" + word + "\" is an invalid phrase)";
 	}
-	std::cout << result << std::endl;
-	//*(this->fout) << result << std::endl;
+	//std::cout << result << std::endl;
+	*(this->fout) << result << std::endl;
 }
 
 int LexialAnalyzer::find_literal(char* c)
@@ -431,7 +429,7 @@ void LexialAnalyzer::read_file(std::string filename)
 		{
 			if (filename[i + 1] != 'p' || filename[i + 2] != 'y' || filename[i + 3] != '\0')
 			{
-				std::cout << "Please enter the path to a valid Python file.\n";
+				//std::cout << "Please enter the path to a valid Python file.\n";
 				return;
 			}
 		}
@@ -448,7 +446,7 @@ void LexialAnalyzer::read_file(std::string filename)
 	}
 	else
 	{
-		std::cout << "Could not open file.\n";
+		//std::cout << "Could not open file.\n";
 	}
 }
 
