@@ -1,9 +1,3 @@
-/*
-Michael Ward A01755332
-Robert Jacobson A01386891
-Kris Mygrant A01962860
-*/
-
 #include "lexicalanalyzer.h"
 #include "syntaxanalyzer.h"
 
@@ -17,10 +11,3 @@ int main(int argc, char* argv[])
 	la->read_file(filename);
 	SyntaxAnalyzer* sa = new SyntaxAnalyzer("output.txt");
 }
-
-
-/*
-Michael Ward A01755332
-Robert Jacobson A01386891
-Kris Mygrant A01962860
-*/
