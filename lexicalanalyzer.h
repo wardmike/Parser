@@ -1,10 +1,3 @@
-/*
-Michael Ward A01755332
-Robert Jacobson A01386891
-Kris Mygrant A01962860
-*/
-
-
 #include <stdio.h>
 #include <fstream>
 #include <string>
@@ -35,9 +28,3 @@ private:
 	int whiteCount;
 	bool comment = false;
 };
-
-/*
-Michael Ward A01755332
-Robert Jacobson A01386891
-Kris Mygrant A01962860
-*/
