@@ -1,9 +1,3 @@
-/*
-Michael Ward A01755332
-Robert Jacobson A01386891
-Kris Mygrant A01962860
-*/
-
 #include "lexicalanalyzer.h"
 
 LexialAnalyzer::LexialAnalyzer(std::string filename)
@@ -449,9 +443,3 @@ void LexialAnalyzer::read_file(std::string filename)
 		//std::cout << "Could not open file.\n";
 	}
 }
-
-/*
-Michael Ward A01755332
-Robert Jacobson A01386891
-Kris Mygrant A01962860
-*/
